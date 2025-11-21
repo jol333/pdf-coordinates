@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO & Meta Information -->
+    <title>PDF Coordinates - Free Offline PDF Point Extractor</title>
+    <meta name="description" content="A completely free, 100% offline tool to extract X/Y coordinates from PDF files. Annotate points and download the annotated PDF. No uploads required." />
+    <meta name="keywords" content="PDF coordinates, get PDF x y, PDF point extractor, free PDF tool, offline PDF viewer, PDF annotation, developer tools, coordinate picker, React PDF" />
+    <meta name="author" content="PDF Coordinates" />
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="PDF Coordinates - Free Offline PDF Point Extractor" />
+    <meta property="og:description" content="Find and annotate precise X/Y coordinates on your PDFs. Runs entirely in your browser for maximum privacy. Free and open source." />
+    <meta property="og:site_name" content="PDF Coordinates" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PDF Coordinates - Free Offline Tool" />
+    <meta name="twitter:description" content="Find and annotate precise X/Y coordinates on your PDFs. Runs entirely in your browser. Free." />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+      /* Custom scrollbar for sidebar */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: #1e293b; }
+      ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+      
+      .pdf-page-container .react-pdf__Page__canvas {
+        margin: 0 auto;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+      .pdf-page-container .react-pdf__Page__textContent {
+        display: none !important; /* Hide text selection layer for cleaner clicking */
+      }
+      .pdf-page-container .react-pdf__Page__annotationLayer {
+        display: none !important; /* Hide annotations for cleaner interaction */
+      }
+      
+      /* SEO Content (Screen reader accessible, visually hidden) */
+      .seo-content {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0",
+    "pdf-lib": "https://aistudiocdn.com/pdf-lib@^1.17.1",
+    "react-pdf/": "https://aistudiocdn.com/react-pdf@^10.2.0/",
+    "react-pdf": "https://aistudiocdn.com/react-pdf@^10.2.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-slate-900 text-slate-100 antialiased overflow-hidden">
+    <div id="root"></div>
+    
+    <!-- Hidden SEO Content to help discovery -->
+    <div class="seo-content">
+        <h1>Free PDF Coordinates Tool</h1>
+        <p>PDF Coordinates is a free, completely offline utility for developers and designers.</p>
+        <p>Easily find X and Y coordinates on any PDF document. Click to add points, switch coordinate origins (Bottom-Left, Top-Left, etc.), and download the annotated PDF.</p>
+        <p>Features: Privacy-first (files never leave your device), precise point selection, drag and drop interface, zoom support, and PDF annotation export.</p>
+    </div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

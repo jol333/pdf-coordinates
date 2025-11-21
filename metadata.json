@@ -1,0 +1,5 @@
+{
+  "name": "PDF Coordinates",
+  "description": "An offline-capable tool to visualize and stamp X/Y coordinates directly onto PDF files for development and debugging.",
+  "requestFramePermissions": []
+}
