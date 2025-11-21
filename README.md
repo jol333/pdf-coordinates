@@ -8,6 +8,8 @@ This contains everything you need to run your app locally.
 
 View your app in AI Studio: https://ai.studio/apps/drive/1Oe5Ymn0flpXmPMHuHo-BX86DIRP9StaI
 
+Live demo: https://jol333.github.io/pdf-coordinates/
+
 ## Run Locally
 
 **Prerequisites:**  Node.js
