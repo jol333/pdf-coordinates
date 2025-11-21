@@ -43,6 +43,7 @@ const App: React.FC = () => {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
   const dragStartRef = useRef<{ x: number, y: number } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Keyboard shortcuts for deletion and tool toggling
   useEffect(() => {
@@ -335,7 +336,7 @@ const App: React.FC = () => {
                 <p className="mb-1 text-sm text-slate-400"><span className="font-semibold">Click to select PDF</span></p>
                 <p className="text-xs text-slate-500">PDF files only</p>
               </div>
-              <input type="file" className="hidden" accept="application/pdf" onChange={onFileChange} />
+              <input ref={fileInputRef} type="file" className="hidden" accept="application/pdf" onChange={onFileChange} />
             </label>
           </div>
         )}
@@ -492,28 +493,30 @@ const App: React.FC = () => {
         </div>
 
         {/* Footer Action */}
-        <div className="p-4 border-t border-slate-800 bg-slate-900">
-          <button
-            onClick={handleSave}
-            disabled={!file || annotations.length === 0 || isSaving}
-            className={`flex items-center justify-center w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all shadow-lg ${!file || annotations.length === 0
-              ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-indigo-500/25'
-              }`}
-          >
-            {isSaving ? (
-              <span className="flex items-center space-x-2">
-                <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
-                <span>Processing...</span>
-              </span>
-            ) : (
-              <span className="flex items-center space-x-2">
-                <Download className="w-4 h-4" />
-                <span>Download PDF</span>
-              </span>
-            )}
-          </button>
-        </div>
+        {file && (
+          <div className="p-4 border-t border-slate-800 bg-slate-900">
+            <button
+              onClick={handleSave}
+              disabled={annotations.length === 0 || isSaving}
+              className={`flex items-center justify-center w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all shadow-lg ${annotations.length === 0
+                ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                : 'bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-indigo-500/25'
+                }`}
+            >
+              {isSaving ? (
+                <span className="flex items-center space-x-2">
+                  <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+                  <span>Processing...</span>
+                </span>
+              ) : (
+                <span className="flex items-center space-x-2">
+                  <Download className="w-4 h-4" />
+                  <span>Download annotated PDF</span>
+                </span>
+              )}
+            </button>
+          </div>
+        )}
       </aside>
 
       {/* Main Content Area (Infinite Canvas) */}
@@ -603,11 +606,14 @@ const App: React.FC = () => {
             `}
         >
           {!file ? (
-            <div className="flex flex-col items-center justify-center text-slate-600 pointer-events-none">
-              <div className="w-24 h-24 bg-slate-900 rounded-2xl border-2 border-dashed border-slate-800 flex items-center justify-center mb-4">
+            <div
+              className="flex flex-col items-center justify-center text-slate-600 cursor-pointer hover:text-slate-500 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <div className="w-24 h-24 bg-slate-900 rounded-2xl border-2 border-dashed border-slate-800 flex items-center justify-center mb-4 hover:border-slate-700 hover:bg-slate-800/50 transition-all">
                 <FileText className="w-10 h-10 opacity-20" />
               </div>
-              <p>Upload a PDF to begin</p>
+              <p>Select a PDF to begin</p>
             </div>
           ) : (
             <div
