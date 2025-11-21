@@ -44,6 +44,7 @@ const App: React.FC = () => {
   const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
   const dragStartRef = useRef<{ x: number, y: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
 
   // Keyboard shortcuts for deletion and tool toggling
   useEffect(() => {
@@ -311,9 +312,76 @@ const App: React.FC = () => {
     dragStartRef.current = null;
   };
 
+  // Drag and Drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!file) {
+      setIsDraggingFile(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    if (x <= rect.left || x >= rect.right || y <= rect.top || y >= rect.bottom) {
+      setIsDraggingFile(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingFile(false);
+
+    if (!file && e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const droppedFile = e.dataTransfer.files[0];
+      if (droppedFile.type !== 'application/pdf') {
+        setError('Please select a valid PDF file.');
+        return;
+      }
+      setFile(droppedFile);
+      setError(null);
+      setAnnotations([]);
+      setPageNumber(1);
+      setPageDimensions({});
+      setSelectedId(null);
+      setPan({ x: 0, y: 0 });
+      setScale(1.0);
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        if (e.target?.result) {
+          const buffer = e.target.result as ArrayBuffer;
+          setFileData(buffer);
+          try {
+            const pdfDoc = await PDFDocument.load(buffer);
+            const pages = pdfDoc.getPages();
+            const dims: Record<number, PageDimensions> = {};
+            pages.forEach((p, idx) => {
+              dims[idx + 1] = { width: p.getWidth(), height: p.getHeight() };
+            });
+            setPageDimensions(dims);
+          } catch (err) {
+            console.error("Error reading PDF dimensions:", err);
+          }
+        }
+      };
+      reader.readAsArrayBuffer(droppedFile);
+    }
+  };
+
 
   return (
-    <div className="flex h-screen w-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
+    <div
+      className="flex h-screen w-screen bg-slate-950 text-slate-200 overflow-hidden font-sans relative"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
 
       {/* Sidebar */}
       <aside className="w-80 flex flex-col border-r border-slate-800 bg-slate-900 z-20 shrink-0 shadow-2xl">
@@ -330,10 +398,10 @@ const App: React.FC = () => {
         {/* File Upload */}
         {!file && (
           <div className="p-4 border-b border-slate-800 bg-slate-900/50">
-            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-700 rounded-xl cursor-pointer hover:bg-slate-800/50 hover:border-indigo-500 transition-all group">
+            <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer transition-all group ${isDraggingFile ? 'border-indigo-500 bg-indigo-500/20 scale-105' : 'border-slate-700 hover:bg-slate-800/50 hover:border-indigo-500'}`}>
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className="w-8 h-8 mb-3 text-slate-500 group-hover:text-indigo-400 transition-colors" />
-                <p className="mb-1 text-sm text-slate-400"><span className="font-semibold">Click to select PDF</span></p>
+                <Upload className={`w-8 h-8 mb-3 transition-colors ${isDraggingFile ? 'text-indigo-400 animate-bounce' : 'text-slate-500 group-hover:text-indigo-400'}`} />
+                <p className="mb-1 text-sm text-slate-400"><span className="font-semibold">{isDraggingFile ? 'Drop PDF here' : 'Click to select PDF'}</span></p>
                 <p className="text-xs text-slate-500">PDF files only</p>
               </div>
               <input ref={fileInputRef} type="file" className="hidden" accept="application/pdf" onChange={onFileChange} />
@@ -605,6 +673,15 @@ const App: React.FC = () => {
                 ${isSpacePressed || isDraggingCanvas ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'}
             `}
         >
+          {isDraggingFile && !file && (
+            <div className="absolute inset-0 bg-indigo-500/10 border-4 border-dashed border-indigo-500/50 z-50 flex items-center justify-center pointer-events-none">
+              <div className="bg-slate-900/90 px-8 py-6 rounded-xl border-2 border-indigo-500 shadow-2xl">
+                <Upload className="w-16 h-16 text-indigo-400 mx-auto mb-4 animate-bounce" />
+                <p className="text-xl font-bold text-white text-center">Drop PDF here</p>
+                <p className="text-sm text-slate-400 text-center mt-2">Release to upload</p>
+              </div>
+            </div>
+          )}
           {!file ? (
             <div
               className="flex flex-col items-center justify-center text-slate-600 cursor-pointer hover:text-slate-500 transition-colors"
